@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Carrera</title>
+  <style>
+    :root {
+      font-family: system-ui, sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .calculator {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      display: grid;
+      gap: 1rem;
+      width: min(90%, 400px);
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    input, select {
+      margin-top: 0.25rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #d0d0d0;
+      border-radius: 0.5rem;
+    }
+    select {
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <label>
+      Distancia (km)
+      <input type="number" id="distance" step="0.001" value="10" />
+    </label>
+
+    <label>
+      Distancia típica
+      <select id="distancePreset">
+        <option value="">-- Selecciona --</option>
+        <option value="42.195">Maratón (42.195 km)</option>
+        <option value="21.0975">Medio Maratón (21.0975 km)</option>
+        <option value="15">15 km</option>
+        <option value="12">12 km</option>
+        <option value="10">10 km</option>
+        <option value="5">5 km</option>
+      </select>
+    </label>
+
+    <label>
+      Tiempo (HH:MM:ss)
+      <input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}" />
+    </label>
+
+    <label>
+      Pace (min/km)
+      <input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}" />
+    </label>
+  </div>
+
+  <script>
+    const distanceInput = document.getElementById('distance');
+    const timeInput = document.getElementById('time');
+    const paceInput = document.getElementById('pace');
+    const distancePreset = document.getElementById('distancePreset');
+
+    /** Utilidades de formato */
+    const pad = (n) => n.toString().padStart(2, '0');
+
+    function hhmmssToSeconds(str) {
+      const [h = 0, m = 0, s = 0] = str.split(':').map(Number);
+      return h * 3600 + m * 60 + s;
+    }
+
+    function secondsToHHMMSS(sec) {
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.round(sec % 60);
+      return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    function mmssToSeconds(str) {
+      const [m = 0, s = 0] = str.split(':').map(Number);
+      return m * 60 + s;
+    }
+
+    function secondsToMMSS(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.round(sec % 60);
+      return `${pad(m)}:${pad(s)}`;
+    }
+
+    /** Inicializar Pace basándonos en 10 km y 60 minutos */
+    function updateInitialPace() {
+      const timeSec = hhmmssToSeconds(timeInput.value);
+      const dist = parseFloat(distanceInput.value);
+      if (!isFinite(dist) || dist === 0) return;
+      const paceSec = timeSec / dist;
+      paceInput.value = secondsToMMSS(paceSec);
+    }
+    updateInitialPace();
+
+    /** Eventos */
+    distancePreset.addEventListener('change', () => {
+      if (distancePreset.value) {
+        distanceInput.value = distancePreset.value;
+        distanceInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+
+    distanceInput.addEventListener('input', () => {
+      const dist = parseFloat(distanceInput.value);
+      if (!isFinite(dist) || dist === 0) return;
+      const paceSec = mmssToSeconds(paceInput.value);
+      const timeSec = dist * paceSec;
+      timeInput.value = secondsToHHMMSS(timeSec);
+    });
+
+    timeInput.addEventListener('input', () => {
+      const dist = parseFloat(distanceInput.value);
+      if (!isFinite(dist) || dist === 0) return;
+      const timeSec = hhmmssToSeconds(timeInput.value);
+      const paceSec = timeSec / dist;
+      paceInput.value = secondsToMMSS(paceSec);
+    });
+
+    paceInput.addEventListener('input', () => {
+      const dist = parseFloat(distanceInput.value);
+      if (!isFinite(dist) || dist === 0) return;
+      const paceSec = mmssToSeconds(paceInput.value);
+      const timeSec = paceSec * dist;
+      timeInput.value = secondsToHHMMSS(timeSec);
+    });
+  </script>
+</body>
+</html>
