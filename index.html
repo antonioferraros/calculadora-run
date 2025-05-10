@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora de Ritmos de Carrera</title>
+  <!-- Tipografía Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      font-family: system-ui, sans-serif;
-      --primary: #00897b;
-      --bg-gradient: linear-gradient(135deg,#e0f7fa 0%, #ffffff 100%);
+      font-family: "Poppins", system-ui, sans-serif;
+      --primary: #e53935;
+      --primary-dark: #c62828;
     }
     body {
       display: flex;
@@ -17,32 +19,35 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      background: var(--bg-gradient);
-      padding: 2rem 1rem;
+      background: #000;
+      padding: 3rem 2rem 4rem;
       gap: 1.5rem;
+      color: #eee;
     }
-    h1{
+    h1 {
       margin: 0;
       font-size: 2rem;
       color: var(--primary);
       text-align: center;
+      line-height: 1.05;
     }
-    .subtitle{
+    .subtitle {
       margin: 0;
       text-align: center;
       max-width: 480px;
       font-size: 0.95rem;
-      color:#333;
+      color: #fff;
     }
     .calculator {
       background: #fff;
       padding: 2rem;
       border-radius: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
       display: grid;
       gap: 1rem;
       width: min(90%, 400px);
       border-top: 6px solid var(--primary);
+      color: #222;
     }
     label {
       display: flex;
@@ -50,15 +55,25 @@
       font-weight: 600;
       font-size: 0.9rem;
     }
+    .label-text { white-space: nowrap; }
     input, select {
-      margin-top: 0.25rem;
-      padding: 0.5rem 0.75rem;
+      margin-top: 0.35rem;
+      padding: 0.55rem 0.9rem;
       font-size: 1rem;
       border: 1px solid #d0d0d0;
       border-radius: 0.5rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    select {
-      background: #fff;
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(229,57,53,0.4);
+    }
+    select { background: #fff; }
+
+    @media (min-width: 600px) {
+      body { padding-left: 1.25rem; padding-right: 1.25rem; }
     }
   </style>
 </head>
@@ -68,9 +83,10 @@
     Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Pace) y los otros dos se completarán automáticamente.<br />
     Si lo prefieres, elige una distancia típica en el desplegable.
   </p>
+
   <div class="calculator">
     <label>
-      Distancia (km)
+      <span class="label-text">Distancia (km)</span>
       <input type="number" id="distance" step="0.001" value="10" />
     </label>
 
@@ -93,81 +109,58 @@
     </label>
 
     <label>
-      Pace (min/km)
+      <span class="label-text">Pace (min/km)</span>
       <input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}" />
     </label>
   </div>
 
-  <script>
-    const distanceInput = document.getElementById('distance');
-    const timeInput = document.getElementById('time');
-    const paceInput = document.getElementById('pace');
-    const distancePreset = document.getElementById('distancePreset');
+<script>
+  const distanceInput  = document.getElementById('distance');
+  const timeInput      = document.getElementById('time');
+  const paceInput      = document.getElementById('pace');
+  const distancePreset = document.getElementById('distancePreset');
 
-    const pad = (n) => n.toString().padStart(2, '0');
+  const pad = n => String(n).padStart(2,'0');
+  const hhmmssToSeconds = str => { const [h=0,m=0,s=0]=str.split(':').map(Number); return h*3600+m*60+s; };
+  const secondsToHHMMSS = sec => { const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=Math.round(sec%60); return `${pad(h)}:${pad(m)}:${pad(s)}`; };
+  const mmssToSeconds   = str => { const [m=0,s=0]=str.split(':').map(Number); return m*60+s; };
+  const secondsToMMSS   = sec => { const m=Math.floor(sec/60),s=Math.round(sec%60); return `${pad(m)}:${pad(s)}`; };
 
-    function hhmmssToSeconds(str) {
-      const [h = 0, m = 0, s = 0] = str.split(':').map(Number);
-      return h * 3600 + m * 60 + s;
+  function updateInitialPace(){
+    const timeSec = hhmmssToSeconds(timeInput.value);
+    const dist    = parseFloat(distanceInput.value);
+    if(!isFinite(dist)||dist===0) return;
+    paceInput.value = secondsToMMSS(timeSec/dist);
+  }
+  updateInitialPace();
+
+  distanceInput.addEventListener('input',()=>{
+    const dist = parseFloat(distanceInput.value);
+    if(!isFinite(dist)||dist===0) return;
+    const paceSec = mmssToSeconds(paceInput.value);
+    timeInput.value = secondsToHHMMSS(dist*paceSec);
+  });
+
+  timeInput.addEventListener('input',()=>{
+    const dist = parseFloat(distanceInput.value);
+    if(!isFinite(dist)||dist===0) return;
+    const timeSec = hhmmssToSeconds(timeInput.value);
+    paceInput.value = secondsToMMSS(timeSec/dist);
+  });
+
+  paceInput.addEventListener('input',()=>{
+    const dist = parseFloat(distanceInput.value);
+    if(!isFinite(dist)||dist===0) return;
+    const paceSec = mmssToSeconds(paceInput.value);
+    timeInput.value = secondsToHHMMSS(paceSec*dist);
+  });
+
+  distancePreset.addEventListener('change',()=>{
+    if(distancePreset.value){
+      distanceInput.value = distancePreset.value;
+      distanceInput.dispatchEvent(new Event('input',{bubbles:true}));
     }
-
-    function secondsToHHMMSS(sec) {
-      const h = Math.floor(sec / 3600);
-      const m = Math.floor((sec % 3600) / 60);
-      const s = Math.round(sec % 60);
-      return `${pad(h)}:${pad(m)}:${pad(s)}`;
-    }
-
-    function mmssToSeconds(str) {
-      const [m = 0, s = 0] = str.split(':').map(Number);
-      return m * 60 + s;
-    }
-
-    function secondsToMMSS(sec) {
-      const m = Math.floor(sec / 60);
-      const s = Math.round(sec % 60);
-      return `${pad(m)}:${pad(s)}`;
-    }
-
-    function updateInitialPace() {
-      const timeSec = hhmmssToSeconds(timeInput.value);
-      const dist = parseFloat(distanceInput.value);
-      if (!isFinite(dist) || dist === 0) return;
-      const paceSec = timeSec / dist;
-      paceInput.value = secondsToMMSS(paceSec);
-    }
-    updateInitialPace();
-
-    distancePreset.addEventListener('change', () => {
-      if (distancePreset.value) {
-        distanceInput.value = distancePreset.value;
-        distanceInput.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    });
-
-    distanceInput.addEventListener('input', () => {
-      const dist = parseFloat(distanceInput.value);
-      if (!isFinite(dist) || dist === 0) return;
-      const paceSec = mmssToSeconds(paceInput.value);
-      const timeSec = dist * paceSec;
-      timeInput.value = secondsToHHMMSS(timeSec);
-    });
-
-    timeInput.addEventListener('input', () => {
-      const dist = parseFloat(distanceInput.value);
-      if (!isFinite(dist) || dist === 0) return;
-      const timeSec = hhmmssToSeconds(timeInput.value);
-      const paceSec = timeSec / dist;
-      paceInput.value = secondsToMMSS(paceSec);
-    });
-
-    paceInput.addEventListener('input', () => {
-      const dist = parseFloat(distanceInput.value);
-      if (!isFinite(dist) || dist === 0) return;
-      const paceSec = mmssToSeconds(paceInput.value);
-      const timeSec = paceSec * dist;
-      timeInput.value = secondsToHHMMSS(timeSec);
-    });
-  </script>
+  });
+</script>
 </body>
 </html>
