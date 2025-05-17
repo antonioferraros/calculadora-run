@@ -7,18 +7,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
     :root{
-      font-family:"Poppins",system-ui,sans-serif;
       --primary:#e53935;
       --primary-dark:#c62828;
+      font-family:"Poppins",system-ui,sans-serif;
     }
     *,*::before,*::after{box-sizing:border-box;}
     body{
-      display:flex;flex-direction:column;align-items:center;min-height:100vh;margin:0;
-      background:#000;color:#eee;padding:3rem 2rem 4rem;gap:1.5rem;
+      display:flex;flex-direction:column;align-items:center;gap:1.5rem;
+      min-height:100vh;margin:0;background:#000;color:#eee;padding:3rem 2rem 4rem;
     }
-    h1{margin:0;font-size:2rem;text-align:center;color:var(--primary);} 
-    h2{font-size:1.25rem;margin:0;color:var(--primary);} 
-    .subtitle{max-width:480px;text-align:center;font-size:.95rem;}
+    h1{margin:0;font-size:2rem;color:var(--primary);text-align:center;}
+    h2{margin:0;font-size:1.25rem;color:var(--primary);}
+    .subtitle{font-size:.95rem;max-width:480px;text-align:center;}
 
     /* ===== Tarjeta base ===== */
     .card{
@@ -29,25 +29,23 @@
 
     /* ===== Calculadora ===== */
     .calculator{display:grid;gap:1rem;grid-template-columns:1fr;}
-
     label{display:flex;flex-direction:column;font-weight:600;font-size:.9rem;}
     .label-text{white-space:nowrap;}
     input,select{
-      margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;
-      border:1px solid #d0d0d0;border-radius:.5rem;font-family:inherit;
-      transition:border-color .2s,box-shadow .2s;width:100%;min-height:44px;
+      margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;border:1px solid #d0d0d0;
+      border-radius:.5rem;font-family:inherit;width:100%;min-height:44px;
+      transition:border-color .2s,box-shadow .2s;
     }
     input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(229,57,53,.4);}    
-
-    .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;transition:background .2s;padding:.7rem 1.4rem;font-size:.95rem;}
-    .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;} 
+    .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;padding:.7rem 1.4rem;font-size:.95rem;transition:background .2s;}
+    .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;}
     .btn-unit:hover{background:var(--primary-dark);} 
 
     /* ===== Resultados parciales ===== */
     #splitsCard{display:grid;gap:1rem;}
     .table-wrapper{overflow-x:auto;}
     .results-table{width:100%;border-collapse:collapse;min-width:320px;}
-    .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;text-align:left;white-space:nowrap;}
+    .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;white-space:nowrap;text-align:left;}
     .results-table thead{position:sticky;top:0;background:#fafafa;}
 
     @media(min-width:480px){
@@ -58,12 +56,22 @@
 </head>
 <body>
   <h1>Calculadora de Ritmos de Carrera</h1>
-  <p class="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Pace) y los otros dos se completarán automáticamente.<br>Si lo prefieres, elige una distancia típica en el desplegable.</p>
+  <p class="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Pace) y los otros dos se completarán automáticamente. <br>También puedes elegir una distancia típica.</p>
 
   <!-- Tarjeta calculadora -->
   <div class="card calculator">
     <label><span class="label-text">Distancia (<span id="distanceUnit">km</span>)</span><input type="number" id="distance" step="0.001" value="10"></label>
-    <label>Distancia típica<select id="distancePreset"><option value="">-- Selecciona --</option><option value="42.195">Maratón</option><option value="21.0975">Medio Maratón</option><option value="15">15 km</option><option value="12">12 km</option><option value="10">10 km</option><option value="5">5 km</option></select></label>
+    <label>Distancia típica
+      <select id="distancePreset">
+        <option value="">-- Selecciona --</option>
+        <option value="42.195">Maratón</option>
+        <option value="21.0975">Medio Maratón</option>
+        <option value="15">15 km</option>
+        <option value="12">12 km</option>
+        <option value="10">10 km</option>
+        <option value="5">5 km</option>
+      </select>
+    </label>
     <label>Tiempo (HH:MM:ss)<input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}"></label>
     <label><span class="label-text">Pace (min/<span id="paceUnit">km</span>)</span><input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}"></label>
     <button id="unitToggle" class="btn btn-unit">Cambiar a Millas</button>
@@ -72,131 +80,135 @@
   <!-- Tarjeta parciales -->
   <div id="splitsCard" class="card" hidden>
     <h2>Resultados parciales para planificación de carrera</h2>
-    <label>Intervalo<select id="splitInterval"><option value="1">Cada 1 <span class="unitLabel">km</span></option><option value="0.5">Cada 0.5 <span class="unitLabel">km</span></option></select></label>
+    <label>Intervalo
+      <select id="splitInterval">
+        <option value="1">Cada 1 km</option>
+        <option value="5">Cada 5 km</option>
+      </select>
+    </label>
     <div class="table-wrapper">
-      <table id="splitsTable" class="results-table"><thead><tr><th>Distancia</th><th>Tiempo acumulado</th></tr></thead><tbody></tbody></table>
+      <table id="splitsTable" class="results-table">
+        <thead><tr><th>Distancia</th><th>Tiempo acumulado</th></tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 
 <script>
 // ---------- DOM refs ----------
-const distanceInput=document.getElementById('distance');
-const timeInput=document.getElementById('time');
-const paceInput=document.getElementById('pace');
-const distancePreset=document.getElementById('distancePreset');
-const unitToggle=document.getElementById('unitToggle');
-const distanceUnitSpan=document.getElementById('distanceUnit');
-const paceUnitSpan=document.getElementById('paceUnit');
-const splitsCard=document.getElementById('splitsCard');
-const splitInterval=document.getElementById('splitInterval');
-const splitsTable=document.getElementById('splitsTable');
+const distanceInput       = document.getElementById('distance');
+const timeInput           = document.getElementById('time');
+const paceInput           = document.getElementById('pace');
+const distancePreset      = document.getElementById('distancePreset');
+const unitToggle          = document.getElementById('unitToggle');
+const distanceUnitSpan    = document.getElementById('distanceUnit');
+const paceUnitSpan        = document.getElementById('paceUnit');
+const splitsCard          = document.getElementById('splitsCard');
+const splitInterval       = document.getElementById('splitInterval');
+const splitsTableBody     = document.querySelector('#splitsTable tbody');
 
-// ---------- Constantes y flags ----------
-const KM_TO_MI=0.621371;
-const MI_TO_KM=1/KM_TO_MI;
-const KM_PER_MI=1.60934;
-let isMetric=true;
+// ---------- Constantes ----------
+const KM_TO_MI = 0.621371;
+const MI_TO_KM = 1 / KM_TO_MI;
+const KM_PER_MI = 1.60934; // inverse of KM_TO_MI but rounded
+let   isMetric = true;
 
-// ---------- Helpers de tiempo ----------
-const pad=n=>String(n).padStart(2,'0');
-const hhmmssToSeconds=str=>{const[h=0,m=0,s=0]=str.split(':').map(Number);return h*3600+m*60+s};
-const secondsToHHMMSS=sec=>{const h=Math.floor(sec/3600),m=Math.floor(sec%3600/60),s=Math.round(sec%60);return`${pad(h)}:${pad(m)}:${pad(s)}`};
-const mmssToSeconds=str=>{const[m=0,s=0]=str.split(':').map(Number);return m*60+s};
-const secondsToMMSS=sec=>{const m=Math.floor(sec/60),s=Math.round(sec%60);return`${pad(m)}:${pad(s)}`};
+// ---------- Utils tiempo ----------
+const pad = n => String(n).padStart(2, '0');
+const hhmmssToSeconds = str => { const [h=0,m=0,s=0] = str.split(':').map(Number); return h*3600 + m*60 + s; };
+const secondsToHHMMSS = sec => { const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=Math.round(sec%60); return `${pad(h)}:${pad(m)}:${pad(s)}`; };
+const mmssToSeconds   = str => { const [m=0,s=0] = str.split(':').map(Number); return m*60 + s; };
+const secondsToMMSS   = sec => { const m=Math.floor(sec/60), s=Math.round(sec%60); return `${pad(m)}:${pad(s)}`; };
 
 // ---------- Cálculos principales ----------
 function calcPace(){
-  const d=parseFloat(distanceInput.value);
-  const t=hhmmssToSeconds(timeInput.value);
-  if(d>0&&t>0){
-    paceInput.value=secondsToMMSS(t/d);
-  }
+  const dist = parseFloat(distanceInput.value);
+  const timeSec = hhmmssToSeconds(timeInput.value);
+  if(dist>0 && timeSec>0){ paceInput.value = secondsToMMSS(timeSec / dist); }
   generateSplits();
 }
+
 function calcTime(){
-  const d=parseFloat(distanceInput.value);
-  const p=mmssToSeconds(paceInput.value);
-  if(d>0&&p>0){
-    timeInput.value=secondsToHHMMSS(d*p);
-  }
+  const dist = parseFloat(distanceInput.value);
+  const paceSec = mmssToSeconds(paceInput.value);
+  if(dist>0 && paceSec>0){ timeInput.value = secondsToHHMMSS(dist * paceSec); }
   generateSplits();
 }
 
 function generateSplits(){
-  const d=parseFloat(distanceInput.value);
-  const p=mmssToSeconds(paceInput.value);
-  if(!(d>0&&p>0)){
-    splitsCard.hidden=true;return;
+  const dist = parseFloat(distanceInput.value);
+  const paceSec = mmssToSeconds(paceInput.value);
+  if(!(dist>0 && paceSec>0)) { splitsCard.hidden = true; return; }
+
+  const interval = parseFloat(splitInterval.value);
+  if(!(interval>0)) { splitsCard.hidden = true; return; }
+
+  splitsTableBody.innerHTML = '';
+  const totalMarks = Math.floor(dist / interval);
+  for(let i=1; i<=totalMarks; i++){
+    const markDist = i * interval;
+    const markTime = markDist * paceSec;
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${markDist.toFixed(2)} ${isMetric ? 'km' : 'mi'}</td><td>${secondsToHHMMSS(markTime)}</td>`;
+    splitsTableBody.appendChild(row);
   }
-  const interval=parseFloat(splitInterval.value);
-  if(!(interval>0)){
-    splitsCard.hidden=true;return;
-  }
-  const tbody=splitsTable.querySelector('tbody');
-  tbody.innerHTML='';
-  const total=Math.floor(d/interval);
-  for(let i=1;i<=total;i++){
-    const mark=i*interval;
-    const time=mark*p;
-    const row=document.createElement('tr');
-    row.innerHTML=`<td>${mark.toFixed(2)} ${isMetric?'km':'mi'}</td><td>${secondsToHHMMSS(time)}</td>`;
-    tbody.appendChild(row);
-  }
-  splitsCard.hidden=false;
+  splitsCard.hidden = false;
 }
 
-// ---------- Eventos ----------
-['input','change'].forEach(evt=>{
-  distanceInput.addEventListener(evt,calcTime);
-  timeInput.addEventListener(evt,calcPace);
-  paceInput.addEventListener(evt,calcTime);
-});
+// ---------- Unidades ----------
+function updateIntervalLabels(unit){
+  splitInterval.options[0].textContent = `Cada 1 ${unit}`;
+  splitInterval.options[1].textContent = `Cada 5 ${unit}`;
+}
 
-distancePreset.addEventListener('change',()=>{
-  if(!distancePreset.value) return;
-  let val=parseFloat(distancePreset.value);
-  if(!isMetric) val*=KM_TO_MI;
-  distanceInput.value=val.toFixed(3);
-  distanceInput.dispatchEvent(new Event('input',{bubbles:true}));
-});
-
-unitToggle.addEventListener('click',()=>{
-  isMetric?toMiles():toKilometers();
-  generateSplits();
-});
-
-splitInterval.addEventListener('change',generateSplits);
-
-// ---------- Conversión de unidades ----------
 function toMiles(){
-  const d=parseFloat(distanceInput.value);
-  const p=mmssToSeconds(paceInput.value);
-  if(d>0) distanceInput.value=(d*KM_TO_MI).toFixed(3);
-  if(p>0) paceInput.value=secondsToMMSS(p*KM_PER_MI);
-  distanceUnitSpan.textContent='mi';
-  paceUnitSpan.textContent='mi';
-  unitToggle.textContent='Cambiar a Kms';
+  const dist = parseFloat(distanceInput.value);
+  const paceSec = mmssToSeconds(paceInput.value);
+  if(dist>0) distanceInput.value = (dist * KM_TO_MI).toFixed(3);
+  if(paceSec>0) paceInput.value = secondsToMMSS(paceSec * KM_PER_MI);
+  distanceUnitSpan.textContent = 'mi';
+  paceUnitSpan.textContent = 'mi';
+  unitToggle.textContent = 'Cambiar a Kms';
   updateIntervalLabels('mi');
   isMetric=false;
 }
 
 function toKilometers(){
-  const d=parseFloat(distanceInput.value);
-  const p=mmssToSeconds(paceInput.value);
-  if(d>0) distanceInput.value=(d*MI_TO_KM).toFixed(3);
-  if(p>0) paceInput.value=secondsToMMSS(p/KM_PER_MI);
-  distanceUnitSpan.textContent='km';
-  paceUnitSpan.textContent='km';
-  unitToggle.textContent='Cambiar a Millas';
+  const dist = parseFloat(distanceInput.value);
+  const paceSec = mmssToSeconds(paceInput.value);
+  if(dist>0) distanceInput.value = (dist * MI_TO_KM).toFixed(3);
+  if(paceSec>0) paceInput.value = secondsToMMSS(paceSec / KM_PER_MI);
+  distanceUnitSpan.textContent = 'km';
+  paceUnitSpan.textContent = 'km';
+  unitToggle.textContent = 'Cambiar a Millas';
   updateIntervalLabels('km');
   isMetric=true;
 }
 
-function updateIntervalLabels(unit){
-  document.querySelectorAll('.unitLabel').forEach(el=>el.textContent=unit);
-}
+// ---------- Eventos ----------
+['input','change'].forEach(evt=>{
+  distanceInput.addEventListener(evt, calcTime);
+  timeInput.addEventListener(evt,     calcPace);
+  paceInput.addEventListener(evt,     calcTime);
+});
+
+distancePreset.addEventListener('change', () => {
+  if(!distancePreset.value) return;
+  let val = parseFloat(distancePreset.value);
+  if(!isMetric) val *= KM_TO_MI;
+  distanceInput.value = val.toFixed(3);
+  distanceInput.dispatchEvent(new Event('input', { bubbles:true }));
+});
+
+unitToggle.addEventListener('click', () => {
+  isMetric ? toMiles() : toKilometers();
+  generateSplits();
+});
+
+splitInterval.addEventListener('change', generateSplits);
 
 // ---------- Inicial ----------
+updateIntervalLabels('km');
 calcPace();
 </script>
 </body>
