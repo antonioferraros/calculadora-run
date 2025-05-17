@@ -1,215 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculadora de Ritmos de Carrera</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
   <style>
-    :root{
-      --primary:#e53935;
-      --primary-dark:#c62828;
-      font-family:"Poppins",system-ui,sans-serif;
-    }
+    :root{--primary:#e53935;--primary-dark:#c62828;font-family:"Poppins",system-ui,sans-serif;}
     *,*::before,*::after{box-sizing:border-box;}
-    body{
-      display:flex;flex-direction:column;align-items:center;gap:1.5rem;
-      min-height:100vh;margin:0;background:#000;color:#eee;padding:3rem 2rem 4rem;
-    }
-    h1{margin:0;font-size:2rem;color:var(--primary);text-align:center;}
-    h2{margin:0;font-size:1.25rem;color:var(--primary);}
-    .subtitle{font-size:.95rem;max-width:480px;text-align:center;}
-
-    /* ===== Tarjeta base ===== */
-    .card{
-      background:#fff;color:#222;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.25);
-      border-top:6px solid var(--primary);
-      width:100%;max-width:420px;padding:2rem;
-    }
-
-    /* ===== Calculadora ===== */
-    .calculator{display:grid;gap:1rem;grid-template-columns:1fr;}
-    label{display:flex;flex-direction:column;font-weight:600;font-size:.9rem;}
-    .label-text{white-space:nowrap;}
-    input,select{
-      margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;border:1px solid #d0d0d0;
-      border-radius:.5rem;font-family:inherit;width:100%;min-height:44px;
-      transition:border-color .2s,box-shadow .2s;
-    }
-    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(229,57,53,.4);}    
-    .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;padding:.7rem 1.4rem;font-size:.95rem;transition:background .2s;}
-    .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;}
-    .btn-unit:hover{background:var(--primary-dark);} 
-
-    /* ===== Resultados parciales ===== */
-    #splitsCard{display:grid;gap:1rem;}
-    .table-wrapper{overflow-x:auto;}
-    .results-table{width:100%;border-collapse:collapse;min-width:320px;}
-    .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;white-space:nowrap;text-align:left;}
-    .results-table thead{position:sticky;top:0;background:#fafafa;}
-
-    @media(min-width:480px){
-      .calculator{grid-template-columns:1fr 1fr;}
-      .calculator .btn-unit{grid-column:1/-1;}
-    }
+    body{display:flex;flex-direction:column;align-items:center;gap:1.5rem;min-height:100vh;margin:0;background:#000;color:#eee;padding:3rem 2rem 4rem;}
+    h1{margin:0;font-size:2rem;color:var(--primary);text-align:center;}h2{margin:0;font-size:1.25rem;color:var(--primary);} .subtitle{font-size:.95rem;max-width:480px;text-align:center;}
+    .card{background:#fff;color:#222;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.25);border-top:6px solid var(--primary);width:100%;max-width:420px;padding:2rem;}
+    .calculator{display:grid;gap:1rem;grid-template-columns:1fr;}label{display:flex;flex-direction:column;font-weight:600;font-size:.9rem;} .label-text{white-space:nowrap;}input,select{margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;border:1px solid #d0d0d0;border-radius:.5rem;font-family:inherit;width:100%;min-height:44px;transition:border-color .2s,box-shadow .2s;}input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(229,57,53,.4);} .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;padding:.7rem 1.4rem;font-size:.95rem;transition:background .2s;} .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;} .btn-unit:hover{background:var(--primary-dark);} #splitsCard{display:grid;gap:1rem;} .table-wrapper{overflow-x:auto;} .results-table{width:100%;border-collapse:collapse;min-width:320px;} .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;white-space:nowrap;text-align:left;} .results-table thead{position:sticky;top:0;background:#fafafa;}@media(min-width:480px){.calculator{grid-template-columns:1fr 1fr;}.calculator .btn-unit{grid-column:1/-1;}}
   </style>
 </head>
 <body>
   <h1>Calculadora de Ritmos de Carrera</h1>
-  <p class="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Pace) y los otros dos se completarán automáticamente. <br>También puedes elegir una distancia típica.</p>
-
-  <!-- Tarjeta calculadora -->
+  <p class="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Ritmo) y los otros dos se completarán automáticamente.<br>También puedes elegir una distancia típica.</p>
   <div class="card calculator">
-    <label><span class="label-text">Distancia (<span id="distanceUnit">km</span>)</span><input type="number" id="distance" step="0.001" value="10"></label>
-    <label>Distancia típica
-      <select id="distancePreset">
-        <option value="">-- Selecciona --</option>
-        <option value="42.195">Maratón</option>
-        <option value="21.0975">Medio Maratón</option>
-        <option value="15">15 km</option>
-        <option value="12">12 km</option>
-        <option value="10">10 km</option>
-        <option value="5">5 km</option>
-      </select>
-    </label>
-    <label>Tiempo (HH:MM:ss)<input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}"></label>
-    <label><span class="label-text">Pace (min/<span id="paceUnit">km</span>)</span><input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}"></label>
+    <label><span class="label-text">Distancia (<span id="distanceUnit">km</span>)</span><input type="number" id="distance" step="0.001" value="10" /></label>
+    <label>Distancia típica<select id="distancePreset"><option value="">-- Selecciona --</option><option value="42.195">Maratón (42.195 km)</option><option value="21.0975">Medio Maratón (21.0975 km)</option><option value="15">15 km</option><option value="12">12 km</option><option value="10">10 km</option><option value="5">5 km</option></select></label>
+    <label>Tiempo (HH:MM:ss)<input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}" /></label>
+    <label><span class="label-text">Ritmo (min/<span id="paceUnit">km</span>)</span><input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}" /></label>
     <button id="unitToggle" class="btn btn-unit">Cambiar a Millas</button>
   </div>
-
-  <!-- Tarjeta parciales -->
-  <div id="splitsCard" class="card" hidden>
-    <h2>Resultados parciales para planificación de carrera</h2>
-    <label>Intervalo
-      <select id="splitInterval">
-        <option value="1">Cada 1 km</option>
-        <option value="5">Cada 5 km</option>
-      </select>
-    </label>
-    <div class="table-wrapper">
-      <table id="splitsTable" class="results-table">
-        <thead><tr><th>Distancia</th><th>Tiempo acumulado</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
-
+  <div id="splitsCard" class="card" hidden><h2>Resultados parciales para planificación de carrera</h2><label>Intervalo<select id="splitInterval"><option value="1">Cada 1 km</option><option value="5">Cada 5 km</option></select></label><div class="table-wrapper"><table id="splitsTable" class="results-table"><thead><tr><th>Distancia</th><th>Tiempo acumulado</th></tr></thead><tbody></tbody></table></div></div>
 <script>
-// ---------- DOM refs ----------
-const distanceInput       = document.getElementById('distance');
-const timeInput           = document.getElementById('time');
-const paceInput           = document.getElementById('pace');
-const distancePreset      = document.getElementById('distancePreset');
-const unitToggle          = document.getElementById('unitToggle');
-const distanceUnitSpan    = document.getElementById('distanceUnit');
-const paceUnitSpan        = document.getElementById('paceUnit');
-const splitsCard          = document.getElementById('splitsCard');
-const splitInterval       = document.getElementById('splitInterval');
-const splitsTableBody     = document.querySelector('#splitsTable tbody');
-
-// ---------- Constantes ----------
-const KM_TO_MI = 0.621371;
-const MI_TO_KM = 1 / KM_TO_MI;
-const KM_PER_MI = 1.60934; // inverse of KM_TO_MI but rounded
-let   isMetric = true;
-
-// ---------- Utils tiempo ----------
-const pad = n => String(n).padStart(2, '0');
-const hhmmssToSeconds = str => { const [h=0,m=0,s=0] = str.split(':').map(Number); return h*3600 + m*60 + s; };
-const secondsToHHMMSS = sec => { const h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=Math.round(sec%60); return `${pad(h)}:${pad(m)}:${pad(s)}`; };
-const mmssToSeconds   = str => { const [m=0,s=0] = str.split(':').map(Number); return m*60 + s; };
-const secondsToMMSS   = sec => { const m=Math.floor(sec/60), s=Math.round(sec%60); return `${pad(m)}:${pad(s)}`; };
-
-// ---------- Cálculos principales ----------
-function calcPace(){
-  const dist = parseFloat(distanceInput.value);
-  const timeSec = hhmmssToSeconds(timeInput.value);
-  if(dist>0 && timeSec>0){ paceInput.value = secondsToMMSS(timeSec / dist); }
-  generateSplits();
-}
-
-function calcTime(){
-  const dist = parseFloat(distanceInput.value);
-  const paceSec = mmssToSeconds(paceInput.value);
-  if(dist>0 && paceSec>0){ timeInput.value = secondsToHHMMSS(dist * paceSec); }
-  generateSplits();
-}
-
-function generateSplits(){
-  const dist = parseFloat(distanceInput.value);
-  const paceSec = mmssToSeconds(paceInput.value);
-  if(!(dist>0 && paceSec>0)) { splitsCard.hidden = true; return; }
-
-  const interval = parseFloat(splitInterval.value);
-  if(!(interval>0)) { splitsCard.hidden = true; return; }
-
-  splitsTableBody.innerHTML = '';
-  const totalMarks = Math.floor(dist / interval);
-  for(let i=1; i<=totalMarks; i++){
-    const markDist = i * interval;
-    const markTime = markDist * paceSec;
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>${markDist.toFixed(2)} ${isMetric ? 'km' : 'mi'}</td><td>${secondsToHHMMSS(markTime)}</td>`;
-    splitsTableBody.appendChild(row);
-  }
-  splitsCard.hidden = false;
-}
-
-// ---------- Unidades ----------
-function updateIntervalLabels(unit){
-  splitInterval.options[0].textContent = `Cada 1 ${unit}`;
-  splitInterval.options[1].textContent = `Cada 5 ${unit}`;
-}
-
-function toMiles(){
-  const dist = parseFloat(distanceInput.value);
-  const paceSec = mmssToSeconds(paceInput.value);
-  if(dist>0) distanceInput.value = (dist * KM_TO_MI).toFixed(3);
-  if(paceSec>0) paceInput.value = secondsToMMSS(paceSec * KM_PER_MI);
-  distanceUnitSpan.textContent = 'mi';
-  paceUnitSpan.textContent = 'mi';
-  unitToggle.textContent = 'Cambiar a Kms';
-  updateIntervalLabels('mi');
-  isMetric=false;
-}
-
-function toKilometers(){
-  const dist = parseFloat(distanceInput.value);
-  const paceSec = mmssToSeconds(paceInput.value);
-  if(dist>0) distanceInput.value = (dist * MI_TO_KM).toFixed(3);
-  if(paceSec>0) paceInput.value = secondsToMMSS(paceSec / KM_PER_MI);
-  distanceUnitSpan.textContent = 'km';
-  paceUnitSpan.textContent = 'km';
-  unitToggle.textContent = 'Cambiar a Millas';
-  updateIntervalLabels('km');
-  isMetric=true;
-}
-
-// ---------- Eventos ----------
-['input','change'].forEach(evt=>{
-  distanceInput.addEventListener(evt, calcTime);
-  timeInput.addEventListener(evt,     calcPace);
-  paceInput.addEventListener(evt,     calcTime);
-});
-
-distancePreset.addEventListener('change', () => {
-  if(!distancePreset.value) return;
-  let val = parseFloat(distancePreset.value);
-  if(!isMetric) val *= KM_TO_MI;
-  distanceInput.value = val.toFixed(3);
-  distanceInput.dispatchEvent(new Event('input', { bubbles:true }));
-});
-
-unitToggle.addEventListener('click', () => {
-  isMetric ? toMiles() : toKilometers();
-  generateSplits();
-});
-
-splitInterval.addEventListener('change', generateSplits);
-
-// ---------- Inicial ----------
-updateIntervalLabels('km');
-calcPace();
+const KM_TO_MI=0.621371,MI_TO_KM=1/KM_TO_MI,KM_PER_MI=1.60934;let isMetric=true;
+const pad=n=>String(n).padStart(2,'0');const hhmmssToSec=s=>{const[a=0,b=0,c=0]=s.split(':').map(Number);return a*3600+b*60+c};const mmssToSec=s=>{const[a=0,b=0]=s.split(':').map(Number);return a*60+b};const secToHHMMSS=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=Math.round(s%60);return`${pad(h)}:${pad(m)}:${pad(sec)}`};const secToMMSS=s=>{const m=Math.floor(s/60),sec=Math.round(s%60);return`${pad(m)}:${pad(sec)}`};
+const $=id=>document.getElementById(id);const distInput=$('distance'),timeInput=$('time'),paceInput=$('pace');const distPreset=$('distancePreset'),unitBtn=$('unitToggle');const distUnit=$('distanceUnit'),paceUnit=$('paceUnit');const splitsCard=$('splitsCard'),splitInt=$('splitInterval'),splitsBody=document.querySelector('#splitsTable tbody');
+const presetOpts=Array.from(distPreset.options).slice(1);const presetKm=presetOpts.map(opt=>parseFloat(opt.value));
+function updatePresetLabels(){presetOpts.forEach((opt,i)=>{const km=presetKm[i],mi=km*KM_TO_MI;if(i===0)opt.textContent=isMetric?`Maratón (${km.toFixed(3)} km)`: `Marathon (${mi.toFixed(2)} mi)`;else if(i===1)opt.textContent=isMetric?`Medio Maratón (${km.toFixed(4)} km)`: `Half Marathon (${mi.toFixed(2)} mi)`;else opt.textContent=isMetric?`${km} km`:`${mi.toFixed(2)} mi`;});}
+function recalcFromTime(){const d=parseFloat(distInput.value),t=hhmmssToSec(timeInput.value);if(d>0&&t>0)paceInput.value=secToMMSS(t/d);}function recalcFromPace(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(d>0&&p>0)timeInput.value=secToHHMMSS(d*p);}function handleChange(e){if(e.target===timeInput)recalcFromTime();else if(e.target===paceInput)recalcFromPace();else{if(paceInput.value)recalcFromPace();else if(timeInput.value)recalcFromTime();}renderSplits();}
+function renderSplits(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(!(d>0&&p>0)){splitsCard.hidden=true;return;}const intv=parseFloat(splitInt.value);if(!(intv>0)){splitsCard.hidden=true;return;}splitsBody.innerHTML='';const marks=Math.floor(d/intv);for(let i=1;i<=marks;i++){const mark=i*intv;splitsBody.insertAdjacentHTML('beforeend',`<tr><td>${mark.toFixed(2)} ${isMetric?'km':'mi'}</td><td>${secToHHMMSS(mark*p)}</td></tr>`);}splitsCard.hidden=false;}
+function updateIntervalLabels(){const u=isMetric?'km':'mi';splitInt.options[0].textContent=`Cada 1 ${u}`;splitInt.options[1].textContent=`Cada 5 ${u}`;}
+function toggleUnits(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(isMetric){if(d>0)distInput.value=(d*KM_TO_MI).toFixed(3);if(p>0)paceInput.value=secToMMSS(p*KM_PER_MI);distUnit.textContent=paceUnit.textContent='mi';unitBtn.textContent='Cambiar a Kms';isMetric=false;}else{if(d>0)distInput.value=(d*MI_TO_KM).toFixed(3);if(p>0)paceInput.value=secToMMSS(p/KM_PER_MI);distUnit.textContent=paceUnit.textContent='km';unitBtn.textContent='Cambiar a Millas';isMetric=true;}updateIntervalLabels();updatePresetLabels();renderSplits();}
+['input','change'].forEach(evt=>{distInput.addEventListener(evt,handleChange);timeInput.addEventListener(evt,handleChange);paceInput.addEventListener(evt,handleChange);});distPreset.addEventListener('change',()=>{if(!distPreset.value)return;let val=parseFloat(distPreset.value);if(!isMetric)val*=KM_TO_MI;distInput.value=val.toFixed(3);handleChange({target:distInput});});unitBtn.addEventListener('click',toggleUnits);splitInt.addEventListener('change',renderSplits);
+updateIntervalLabels();updatePresetLabels();renderSplits();
 </script>
 </body>
 </html>
