@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,34 +10,336 @@
     :root{--primary:#e53935;--primary-dark:#c62828;font-family:"Poppins",system-ui,sans-serif;}
     *,*::before,*::after{box-sizing:border-box;}
     body{display:flex;flex-direction:column;align-items:center;gap:1.5rem;min-height:100vh;margin:0;background:#000;color:#eee;padding:3rem 2rem 4rem;}
-    h1{margin:0;font-size:2rem;color:var(--primary);text-align:center;}h2{margin:0;font-size:1.25rem;color:var(--primary);} .subtitle{font-size:.95rem;max-width:480px;text-align:center;}
+    h1{margin:0;font-size:2rem;color:var(--primary);text-align:center;}
+    h2{margin:0;font-size:1.25rem;color:var(--primary);}
+    .subtitle{font-size:.95rem;max-width:480px;text-align:center;}
     .card{background:#fff;color:#222;border-radius:1rem;box-shadow:0 6px 20px rgba(0,0,0,.25);border-top:6px solid var(--primary);width:100%;max-width:420px;padding:2rem;}
-    .calculator{display:grid;gap:1rem;grid-template-columns:1fr;}label{display:flex;flex-direction:column;font-weight:600;font-size:.9rem;} .label-text{white-space:nowrap;}input,select{margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;border:1px solid #d0d0d0;border-radius:.5rem;font-family:inherit;width:100%;min-height:44px;transition:border-color .2s,box-shadow .2s;}input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(229,57,53,.4);} .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;padding:.7rem 1.4rem;font-size:.95rem;transition:background .2s;} .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;} .btn-unit:hover{background:var(--primary-dark);} #splitsCard{display:grid;gap:1rem;} .table-wrapper{overflow-x:auto;} .results-table{width:100%;border-collapse:collapse;min-width:320px;} .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;white-space:nowrap;text-align:left;} .results-table thead{position:sticky;top:0;background:#fafafa;}@media(min-width:480px){.calculator{grid-template-columns:1fr 1fr;}.calculator .btn-unit{grid-column:1/-1;}}
+    .calculator{display:grid;gap:1rem;grid-template-columns:1fr;}
+    label{display:flex;flex-direction:column;font-weight:600;font-size:.9rem;}
+    .label-text{white-space:nowrap;}
+    input,select{margin-top:.35rem;padding:.55rem .9rem;font-size:1rem;border:1px solid #d0d0d0;border-radius:.5rem;font-family:inherit;width:100%;min-height:44px;transition:border-color .2s,box-shadow .2s;}
+    input:focus,select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(229,57,53,.4);}
+    .btn{cursor:pointer;border:none;border-radius:.5rem;font-weight:600;padding:.7rem 1.4rem;font-size:.95rem;transition:background .2s;}
+    .btn-unit{background:var(--primary);color:#fff;grid-column:1/-1;}
+    .btn-unit:hover{background:var(--primary-dark);}
+    #splitsCard{display:grid;gap:1rem;}
+    .table-wrapper{overflow-x:auto;}
+    .results-table{width:100%;border-collapse:collapse;min-width:320px;}
+    .results-table th,.results-table td{padding:.5rem .75rem;border-bottom:1px solid #eee;white-space:nowrap;text-align:left;}
+    .results-table thead{position:sticky;top:0;background:#fafafa;}
+    .lang-flags{display:flex;justify-content:center;align-items:center;gap:1.2rem;margin-bottom:10px;}
+    .flag-btn{background:none;border:none;cursor:pointer;padding:0;outline:none;}
+    .flag-img{width:32px;height:22px;object-fit:cover;border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,0.13);}
+    .flag-btn.active .flag-img{box-shadow:0 0 0 3px var(--primary);}
+    @media(min-width:480px){.calculator{grid-template-columns:1fr 1fr;}.calculator .btn-unit{grid-column:1/-1;}}
   </style>
 </head>
 <body>
-  <h1>Calculadora de Ritmos de Carrera</h1>
-  <p class="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Ritmo) y los otros dos se completarán automáticamente.<br>También puedes elegir una distancia típica.</p>
+  <div class="lang-flags">
+    <button class="flag-btn active" id="flag-es" title="Español" aria-label="Español">
+      <img src="https://flagcdn.com/es.svg" class="flag-img" alt="Español">
+    </button>
+    <button class="flag-btn" id="flag-it" title="Italiano" aria-label="Italiano">
+      <img src="https://flagcdn.com/it.svg" class="flag-img" alt="Italiano">
+    </button>
+    <button class="flag-btn" id="flag-en" title="English" aria-label="English">
+      <img src="https://flagcdn.com/gb.svg" class="flag-img" alt="English">
+    </button>
+  </div>
+  <h1 id="mainTitle">Calculadora de Ritmos de Carrera</h1>
+  <p class="subtitle" id="subtitle">Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Ritmo) y los otros dos se completarán automáticamente.<br>También puedes elegir una distancia típica.</p>
   <div class="card calculator">
-    <label><span class="label-text">Distancia (<span id="distanceUnit">km</span>)</span><input type="number" id="distance" step="0.001" value="10" /></label>
-    <label>Distancia típica<select id="distancePreset"><option value="">-- Selecciona --</option><option value="42.195">Maratón (42.195 km)</option><option value="21.0975">Medio Maratón (21.0975 km)</option><option value="15">15 km</option><option value="12">12 km</option><option value="10">10 km</option><option value="5">5 km</option></select></label>
-    <label>Tiempo (HH:MM:ss)<input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}" /></label>
-    <label><span class="label-text">Ritmo (min/<span id="paceUnit">km</span>)</span><input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}" /></label>
+    <label><span class="label-text" id="lblDistancia">Distancia (<span id="distanceUnit">km</span>)</span><input type="number" id="distance" step="0.001" value="10" /></label>
+    <label><span id="lblDistPreset">Distancia típica</span>
+      <select id="distancePreset">
+        <option value="">-- Selecciona --</option>
+        <option value="42.195">Maratón (42.195 km)</option>
+        <option value="21.0975">Medio Maratón (21.0975 km)</option>
+        <option value="15">15 km</option>
+        <option value="12">12 km</option>
+        <option value="10">10 km</option>
+        <option value="5">5 km</option>
+      </select>
+    </label>
+    <label><span id="lblTiempo">Tiempo (HH:MM:ss)</span><input type="text" id="time" value="01:00:00" pattern="\d{1,2}:\d{2}:\d{2}" /></label>
+    <label><span class="label-text" id="lblRitmo">Ritmo (min/<span id="paceUnit">km</span>)</span><input type="text" id="pace" value="06:00" pattern="\d{1,2}:\d{2}" /></label>
     <button id="unitToggle" class="btn btn-unit">Cambiar a Millas</button>
   </div>
-  <div id="splitsCard" class="card" hidden><h2>Resultados parciales para planificación de carrera</h2><label>Intervalo<select id="splitInterval"><option value="1">Cada 1 km</option><option value="5">Cada 5 km</option></select></label><div class="table-wrapper"><table id="splitsTable" class="results-table"><thead><tr><th>Distancia</th><th>Tiempo acumulado</th></tr></thead><tbody></tbody></table></div></div>
+  <div id="splitsCard" class="card" hidden>
+    <h2 id="lblResultados">Resultados parciales para planificación de carrera</h2>
+    <label><span id="lblIntervalo">Intervalo</span>
+      <select id="splitInterval">
+        <option value="1">Cada 1 km</option>
+        <option value="5">Cada 5 km</option>
+      </select>
+    </label>
+    <div class="table-wrapper">
+      <table id="splitsTable" class="results-table">
+        <thead>
+          <tr>
+            <th id="thDist">Distancia</th>
+            <th id="thTiempo">Tiempo acumulado</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 <script>
-const KM_TO_MI=0.621371,MI_TO_KM=1/KM_TO_MI,KM_PER_MI=1.60934;let isMetric=true;
-const pad=n=>String(n).padStart(2,'0');const hhmmssToSec=s=>{const[a=0,b=0,c=0]=s.split(':').map(Number);return a*3600+b*60+c};const mmssToSec=s=>{const[a=0,b=0]=s.split(':').map(Number);return a*60+b};const secToHHMMSS=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=Math.round(s%60);return`${pad(h)}:${pad(m)}:${pad(sec)}`};const secToMMSS=s=>{const m=Math.floor(s/60),sec=Math.round(s%60);return`${pad(m)}:${pad(sec)}`};
-const $=id=>document.getElementById(id);const distInput=$('distance'),timeInput=$('time'),paceInput=$('pace');const distPreset=$('distancePreset'),unitBtn=$('unitToggle');const distUnit=$('distanceUnit'),paceUnit=$('paceUnit');const splitsCard=$('splitsCard'),splitInt=$('splitInterval'),splitsBody=document.querySelector('#splitsTable tbody');
-const presetOpts=Array.from(distPreset.options).slice(1);const presetKm=presetOpts.map(opt=>parseFloat(opt.value));
-function updatePresetLabels(){presetOpts.forEach((opt,i)=>{const km=presetKm[i],mi=km*KM_TO_MI;if(i===0)opt.textContent=isMetric?`Maratón (${km.toFixed(3)} km)`: `Marathon (${mi.toFixed(2)} mi)`;else if(i===1)opt.textContent=isMetric?`Medio Maratón (${km.toFixed(4)} km)`: `Half Marathon (${mi.toFixed(2)} mi)`;else opt.textContent=isMetric?`${km} km`:`${mi.toFixed(2)} mi`;});}
-function recalcFromTime(){const d=parseFloat(distInput.value),t=hhmmssToSec(timeInput.value);if(d>0&&t>0)paceInput.value=secToMMSS(t/d);}function recalcFromPace(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(d>0&&p>0)timeInput.value=secToHHMMSS(d*p);}function handleChange(e){if(e.target===timeInput)recalcFromTime();else if(e.target===paceInput)recalcFromPace();else{if(paceInput.value)recalcFromPace();else if(timeInput.value)recalcFromTime();}renderSplits();}
-function renderSplits(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(!(d>0&&p>0)){splitsCard.hidden=true;return;}const intv=parseFloat(splitInt.value);if(!(intv>0)){splitsCard.hidden=true;return;}splitsBody.innerHTML='';const marks=Math.floor(d/intv);for(let i=1;i<=marks;i++){const mark=i*intv;splitsBody.insertAdjacentHTML('beforeend',`<tr><td>${mark.toFixed(2)} ${isMetric?'km':'mi'}</td><td>${secToHHMMSS(mark*p)}</td></tr>`);}splitsCard.hidden=false;}
-function updateIntervalLabels(){const u=isMetric?'km':'mi';splitInt.options[0].textContent=`Cada 1 ${u}`;splitInt.options[1].textContent=`Cada 5 ${u}`;}
-function toggleUnits(){const d=parseFloat(distInput.value),p=mmssToSec(paceInput.value);if(isMetric){if(d>0)distInput.value=(d*KM_TO_MI).toFixed(3);if(p>0)paceInput.value=secToMMSS(p*KM_PER_MI);distUnit.textContent=paceUnit.textContent='mi';unitBtn.textContent='Cambiar a Kms';isMetric=false;}else{if(d>0)distInput.value=(d*MI_TO_KM).toFixed(3);if(p>0)paceInput.value=secToMMSS(p/KM_PER_MI);distUnit.textContent=paceUnit.textContent='km';unitBtn.textContent='Cambiar a Millas';isMetric=true;}updateIntervalLabels();updatePresetLabels();renderSplits();}
-['input','change'].forEach(evt=>{distInput.addEventListener(evt,handleChange);timeInput.addEventListener(evt,handleChange);paceInput.addEventListener(evt,handleChange);});distPreset.addEventListener('change',()=>{if(!distPreset.value)return;let val=parseFloat(distPreset.value);if(!isMetric)val*=KM_TO_MI;distInput.value=val.toFixed(3);handleChange({target:distInput});});unitBtn.addEventListener('click',toggleUnits);splitInt.addEventListener('change',renderSplits);
-updateIntervalLabels();updatePresetLabels();renderSplits();
+
+const LANGS = {
+  es: {
+    title: 'Calculadora de Ritmos de Carrera',
+    subtitle: 'Ingresa <strong>solo uno</strong> de los tres campos (Distancia, Tiempo o Ritmo) y los otros dos se completarán automáticamente.<br>También puedes elegir una distancia típica.',
+    distancia: 'Distancia',
+    unidad: 'km',
+    unidadMi: 'mi',
+    distanciaTipica: 'Distancia típica',
+    tiempo: 'Tiempo (HH:MM:ss)',
+    ritmoKm: 'Ritmo (min/km)',
+    ritmoMi: 'Ritmo (min/mi)',
+    cambiar: 'Cambiar a Millas',
+    cambiarKm: 'Cambiar a Kms',
+    resultados: 'Resultados parciales para planificación de carrera',
+    intervalo: 'Intervalo',
+    cada1: 'Cada 1 km',
+    cada5: 'Cada 5 km',
+    cada1Mi: 'Cada 1 mi',
+    cada5Mi: 'Cada 5 mi',
+    thDist: 'Distancia',
+    thTiempo: 'Tiempo acumulado',
+    presetsKm: [
+      '-- Selecciona --',
+      'Maratón (42.195 km)',
+      'Medio Maratón (21.0975 km)',
+      '15 km',
+      '12 km',
+      '10 km',
+      '5 km'
+    ],
+    presetsMi: [
+      '-- Selecciona --',
+      'Maratón (26.22 mi)',
+      'Medio Maratón (13.11 mi)',
+      '9.32 mi',
+      '7.46 mi',
+      '6.21 mi',
+      '3.11 mi'
+    ],
+    presetValuesKm: [null,42.195,21.0975,15,12,10,5],
+    presetValuesMi: [null,26.22,13.11,9.32,7.46,6.21,3.11]
+  },
+  it: {
+    title: 'Calcolatrice di Ritmi di Corsa',
+    subtitle: 'Inserisci <strong>solo uno</strong> dei tre campi (Distanza, Tempo o Ritmo) e gli altri due verranno compilati automaticamente.<br>Puoi anche scegliere una distanza tipica.',
+    distancia: 'Distanza',
+    unidad: 'km',
+    unidadMi: 'mi',
+    distanciaTipica: 'Distanza tipica',
+    tiempo: 'Tempo (HH:MM:ss)',
+    ritmoKm: 'Ritmo (min/km)',
+    ritmoMi: 'Ritmo (min/mi)',
+    cambiar: 'Passa a Miglia',
+    cambiarKm: 'Passa a Km',
+    resultados: 'Risultati parziali per la pianificazione della corsa',
+    intervalo: 'Intervallo',
+    cada1: 'Ogni 1 km',
+    cada5: 'Ogni 5 km',
+    cada1Mi: 'Ogni 1 mi',
+    cada5Mi: 'Ogni 5 mi',
+    thDist: 'Distanza',
+    thTiempo: 'Tempo accumulato',
+    presetsKm: [
+      '-- Seleziona --',
+      'Maratona (42.195 km)',
+      'Mezza Maratona (21.0975 km)',
+      '15 km',
+      '12 km',
+      '10 km',
+      '5 km'
+    ],
+    presetsMi: [
+      '-- Seleziona --',
+      'Maratona (26.22 mi)',
+      'Mezza Maratona (13.11 mi)',
+      '9.32 mi',
+      '7.46 mi',
+      '6.21 mi',
+      '3.11 mi'
+    ],
+    presetValuesKm: [null,42.195,21.0975,15,12,10,5],
+    presetValuesMi: [null,26.22,13.11,9.32,7.46,6.21,3.11]
+  },
+  en: {
+    title: 'Race Pace Calculator',
+    subtitle: 'Enter <strong>only one</strong> of the three fields (Distance, Time, or Pace) and the other two will be calculated automatically.<br>You can also choose a typical distance.',
+    distancia: 'Distance',
+    unidad: 'km',
+    unidadMi: 'mi',
+    distanciaTipica: 'Typical distance',
+    tiempo: 'Time (HH:MM:ss)',
+    ritmoKm: 'Pace (min/km)',
+    ritmoMi: 'Pace (min/mi)',
+    cambiar: 'Switch to Miles',
+    cambiarKm: 'Switch to Kilometers',
+    resultados: 'Split results for race planning',
+    intervalo: 'Interval',
+    cada1: 'Every 1 km',
+    cada5: 'Every 5 km',
+    cada1Mi: 'Every 1 mi',
+    cada5Mi: 'Every 5 mi',
+    thDist: 'Distance',
+    thTiempo: 'Cumulative Time',
+    presetsKm: [
+      '-- Select --',
+      'Marathon (42.20 km)',
+      'Half Marathon (21.10 km)',
+      '15 km',
+      '12 km',
+      '10 km',
+      '5 km'
+    ],
+    presetsMi: [
+      '-- Select --',
+      'Marathon (26.22 mi)',
+      'Half Marathon (13.11 mi)',
+      '9.32 mi',
+      '7.46 mi',
+      '6.21 mi',
+      '3.11 mi'
+    ],
+    presetValuesKm: [null,42.195,21.0975,15,12,10,5],
+    presetValuesMi: [null,26.22,13.11,9.32,7.46,6.21,3.11]
+  }
+};
+
+let currentLang = 'es'; // default
+let isMetric = true;
+const KM_TO_MI = 0.621371, MI_TO_KM = 1 / KM_TO_MI, KM_PER_MI = 1.60934;
+const pad = n => String(n).padStart(2, '0');
+const hhmmssToSec = s => { const [a = 0, b = 0, c = 0] = s.split(':').map(Number); return a * 3600 + b * 60 + c }
+const mmssToSec = s => { const [a = 0, b = 0] = s.split(':').map(Number); return a * 60 + b }
+const secToHHMMSS = s => { const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = Math.round(s % 60); return `${pad(h)}:${pad(m)}:${pad(sec)}` }
+const secToMMSS = s => { const m = Math.floor(s / 60), sec = Math.round(s % 60); return `${pad(m)}:${pad(sec)}` }
+const $ = id => document.getElementById(id);
+const distInput = $('distance'), timeInput = $('time'), paceInput = $('pace');
+const distPreset = $('distancePreset'), unitBtn = $('unitToggle');
+const distUnit = $('distanceUnit'), paceUnit = $('paceUnit');
+const splitsCard = $('splitsCard'), splitInt = $('splitInterval'), splitsBody = document.querySelector('#splitsTable tbody');
+
+function setLang(lang) {
+  currentLang = lang;
+  const t = LANGS[lang];
+
+  $('mainTitle').textContent = t.title;
+  $('subtitle').innerHTML = t.subtitle;
+
+  // Unidad y textos según métrico/millas
+  const unit = isMetric ? t.unidad : t.unidadMi;
+  const ritmoLabel = isMetric ? t.ritmoKm : t.ritmoMi;
+  $('lblDistancia').innerHTML = `${t.distancia} (<span id="distanceUnit">${unit}</span>)`;
+  $('lblDistPreset').textContent = t.distanciaTipica;
+  $('lblTiempo').textContent = t.tiempo;
+  $('lblRitmo').innerHTML = ritmoLabel.replace(unit, `<span id="paceUnit">${unit}</span>`);
+  unitBtn.textContent = isMetric ? t.cambiar : t.cambiarKm;
+  $('lblResultados').textContent = t.resultados;
+  $('lblIntervalo').textContent = t.intervalo;
+  splitInt.options[0].textContent = isMetric ? t.cada1 : t.cada1Mi;
+  splitInt.options[1].textContent = isMetric ? t.cada5 : t.cada5Mi;
+  $('thDist').textContent = t.thDist;
+  $('thTiempo').textContent = t.thTiempo;
+
+  // Cambia los presets
+  const presets = isMetric ? t.presetsKm : t.presetsMi;
+  for (let i = 0; i < distPreset.options.length; i++) {
+    distPreset.options[i].textContent = presets[i];
+  }
+
+  // Visual de bandera activa
+  document.querySelectorAll('.flag-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById('flag-' + lang).classList.add('active');
+}
+
+function setPresetValue(index) {
+  const t = LANGS[currentLang];
+  let value;
+  if (isMetric) value = t.presetValuesKm[index];
+  else value = t.presetValuesMi[index];
+  if (value) distInput.value = value.toFixed(3);
+  handleChange({ target: distInput });
+}
+
+function recalcFromTime() {
+  const d = parseFloat(distInput.value), t = hhmmssToSec(timeInput.value);
+  if (d > 0 && t > 0) paceInput.value = secToMMSS(t / d);
+}
+function recalcFromPace() {
+  const d = parseFloat(distInput.value), p = mmssToSec(paceInput.value);
+  if (d > 0 && p > 0) timeInput.value = secToHHMMSS(d * p);
+}
+function handleChange(e) {
+  if (e.target === timeInput) recalcFromTime();
+  else if (e.target === paceInput) recalcFromPace();
+  else { if (paceInput.value) recalcFromPace(); else if (timeInput.value) recalcFromTime(); }
+  renderSplits();
+}
+function renderSplits() {
+  const d = parseFloat(distInput.value), p = mmssToSec(paceInput.value);
+  if (!(d > 0 && p > 0)) { splitsCard.hidden = true; return; }
+  const intv = parseFloat(splitInt.value);
+  if (!(intv > 0)) { splitsCard.hidden = true; return; }
+  splitsBody.innerHTML = '';
+  const marks = Math.floor(d / intv);
+  for (let i = 1; i <= marks; i++) {
+    const mark = i * intv;
+    splitsBody.insertAdjacentHTML('beforeend',
+      `<tr><td>${mark.toFixed(2)} ${isMetric ? LANGS[currentLang].unidad : LANGS[currentLang].unidadMi}</td><td>${secToHHMMSS(mark * p)}</td></tr>`);
+  }
+  splitsCard.hidden = false;
+}
+function updateIntervalLabels() {
+  const t = LANGS[currentLang];
+  splitInt.options[0].textContent = isMetric ? t.cada1 : t.cada1Mi;
+  splitInt.options[1].textContent = isMetric ? t.cada5 : t.cada5Mi;
+}
+function toggleUnits() {
+  // Convierte los valores según la unidad actual
+  let d = parseFloat(distInput.value);
+  let p = mmssToSec(paceInput.value);
+  isMetric = !isMetric;
+  if (isMetric) {
+    if (d > 0) distInput.value = (d * MI_TO_KM).toFixed(3);
+    if (p > 0) paceInput.value = secToMMSS(p / KM_PER_MI);
+  } else {
+    if (d > 0) distInput.value = (d * KM_TO_MI).toFixed(3);
+    if (p > 0) paceInput.value = secToMMSS(p * KM_PER_MI);
+  }
+  setLang(currentLang);
+  updateIntervalLabels();
+  renderSplits();
+}
+
+['input', 'change'].forEach(evt => {
+  distInput.addEventListener(evt, handleChange);
+  timeInput.addEventListener(evt, handleChange);
+  paceInput.addEventListener(evt, handleChange);
+});
+
+distPreset.addEventListener('change', function () {
+  setPresetValue(distPreset.selectedIndex);
+});
+
+unitBtn.addEventListener('click', toggleUnits);
+splitInt.addEventListener('change', renderSplits);
+
+// Idioma: banderas
+document.getElementById('flag-es').onclick = () => { setLang('es'); updateIntervalLabels(); renderSplits(); };
+document.getElementById('flag-it').onclick = () => { setLang('it'); updateIntervalLabels(); renderSplits(); };
+document.getElementById('flag-en').onclick = () => { setLang('en'); updateIntervalLabels(); renderSplits(); };
+
+updateIntervalLabels();
+setLang(currentLang);
+renderSplits();
 </script>
 </body>
 </html>
